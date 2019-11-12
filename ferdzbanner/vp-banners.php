@@ -715,18 +715,22 @@ function wp_custom_attachment_expansivo() {
 } // end wp_custom_attachment
 
 
-function save_custom_meta_data_expansivo($id) {
-	
+function salvar_conteudo_customiz_expansivo($id) {
+	global $wp_query;
+	global $post;
     /* --- security verification --- */
-    if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
+    if(isset($_POST['wp_custom_attachment_nonce'])) {
+	if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
 		return $id;
     } // end if
+	}
 	
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 		return $id;
     } // end if
 	
-    if('page' == $_POST['post_type']) {
+	if(isset($_POST['post_type'])) {
+		    if('page' == $_POST['post_type']) {
 		if(!current_user_can('edit_page', $id)) {
 			return $id;
 		} // end if
@@ -735,18 +739,22 @@ function save_custom_meta_data_expansivo($id) {
             return $id;
         } // end if
     } // end if
+
+	}
 	
 	
-	
-	add_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']);
+	if(isset($_POST['wp_custom_attachment_expansivo'])) {
+			add_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']);
 	//add_post_meta($id, 'wp_custom_attachment_type_expansivo', $_POST['wp_custom_attachment_type_expansivo']);
 	update_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']); 
 	//update_post_meta($id, 'wp_custom_attachment_type_expansivo', $_POST['wp_custom_attachment_type_expansivo']); 
 	
+
+	}
 	
 	
-} // end save_custom_meta_data
-add_action('save_post', 'save_custom_meta_data_expansivo');
+} // end salvar_conteudo_customiz
+add_action('save_post', 'salvar_conteudo_customiz_expansivo');
 
 function update_edit_form_expansivo() {
     echo ' enctype="multipart/form-data"';
@@ -1417,17 +1425,23 @@ function wp_custom_attachment() {
 } // end wp_custom_attachment
 
 
-function save_custom_meta_data($id) {
-	
+function salvar_conteudo_customiz($id) {
+	global $wp_query;
+	global $post;
+
     /* --- security verification --- */
-    if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
+	if(isset($_POST['wp_custom_attachment_nonce'])) {
+    if(wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
 		return $id;
     } // end if
+	}
 	
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 		return $id;
     } // end if
 	
+	
+	if(isset($_POST['post_type'])) {
     if('page' == $_POST['post_type']) {
 		if(!current_user_can('edit_page', $id)) {
 			return $id;
@@ -1437,6 +1451,8 @@ function save_custom_meta_data($id) {
             return $id;
         } // end if
     } // end if
+	}
+	
     /* - end security verification - */
 	
     // Make sure the file array isn't empty
@@ -1459,9 +1475,10 @@ function save_custom_meta_data($id) {
 	// wp_die('There was an error uploading your file. The error is: ' . $upload['error']);
 	// } else {
 	
-	
+	if(isset($_POST['wp_custom_attachment'])) {
 	add_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']);
 	update_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']); 
+	}
 	
 	
 	
@@ -1475,8 +1492,8 @@ function save_custom_meta_data($id) {
 	
 	//  } // end if
 	
-} // end save_custom_meta_data
-add_action('save_post', 'save_custom_meta_data');
+} // end salvar_conteudo_customiz
+add_action('save_post', 'salvar_conteudo_customiz');
 
 function update_edit_form() {
     echo ' enctype="multipart/form-data"';
