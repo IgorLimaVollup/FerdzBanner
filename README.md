@@ -1,2 +1,2 @@
 # FerdzBanner
-Plugin Wordpress FerdzBanner, gerenciador de banners com contagem de visualização, cliques e relatórios.l
+Plugin Wordpress FerdzBanner, gerenciador de banners com contagem de visualização, cliques e relatórios.
