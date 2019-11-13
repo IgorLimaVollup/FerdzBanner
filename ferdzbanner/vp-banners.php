@@ -73,7 +73,8 @@ function cron_verifica_limite() {
 		wp_schedule_event(time(), 'daily', 'evento_verifica_limite');
 	}
 }
-//add_action('evento_verifica_limite', 'verifica_limite_hora');
+add_action('evento_verifica_limite', 'verifica_limite_hora');
+
 function verifica_limite_hora() {
 	global $wpdb;
 	$params = array( 'post_type' => 'banners', 'meta_key' => 'ativo', 'meta_value' => 'Ativo');	
@@ -153,18 +154,6 @@ function verifica_exibicao_diariamente() {
 			wp_mail($recebimento, "O banner ". get_the_title() ." acabou de atingir a data limite", $mensagem, $headers);
 		}
 	endwhile;
-}
-
-add_action( 'phpmailer_init', 'teste_phpmailer_init' );
-function teste_phpmailer_init( PHPMailer $phpmailer ) {
-	$phpmailer->Host = 'smtp.gmail.com';
-	$phpmailer->Port = 587; // could be different
-	$phpmailer->Username = 'vagas@vollup.com'; // if required
-	$phpmailer->Password = '@vagas123!'; // if required
-	$phpmailer->isHTML(true); // Set email format to HTML
-	$phpmailer->SMTPAuth = true; // if required
-	$phpmailer->SMTPSecure = 'tls'; // enable if required, 'tls' is another possible value
-	$phpmailer->IsSMTP();
 }
 
 register_deactivation_hook(__FILE__, 'desabilita_cron_verifica_exibicao');
@@ -1804,7 +1793,7 @@ function retornaCodigoBanner($attsArr) {
 }
 
 //--------------------------------------------
-
+/*
 function ferdzbanner_slide_shortcode() {
 	$dados['script'] = "";
 	$dados['html'] = "";
@@ -1929,7 +1918,7 @@ function ferdzbanner_slides() { ?>
 		body > .ferdzbanner_anuncio {position: fixed;cursor: default;z-index: 99999}
 	</style>
 <?php }
-add_action( 'wp_footer', 'ferdzbanner_slides', 5 );
+add_action( 'wp_footer', 'ferdzbanner_slides', 5 );*/
 
 
 
