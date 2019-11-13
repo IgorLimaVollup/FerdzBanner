@@ -1927,7 +1927,7 @@ function ferdzbanner_slides() { ?>
 		.ferdzbanner_anuncio .anuncio img {margin-bottom: 0px}
 		.mfp-container .ferdzbanner_anuncio {z-index: 99999;}
 		body > .ferdzbanner_anuncio {position: fixed;cursor: default;z-index: 99999}
-	</style>;
+	</style>
 <?php }
 add_action( 'wp_footer', 'ferdzbanner_slides', 5 );
 
