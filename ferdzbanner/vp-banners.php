@@ -218,9 +218,9 @@ function prfx_meta_callback_limit($post) {
     $prfx_stored_meta = get_post_meta( $post->ID );
 	?>
 		<p>
-			<input type="text" name="limite" id="limit-banner" value="<?php if($prfx_stored_meta['limite'] != "") {echo $prfx_stored_meta['limite'][0];} ?>" placeholder="0" />
+			<input type="text" name="limite" id="limit-banner" value="<?php if(isset($prfx_stored_meta['limite']) && $prfx_stored_meta['limite'] != "") {echo $prfx_stored_meta['limite'][0];} ?>" placeholder="0" />
 			<label style="vertical-align: middle;display: inline-block;margin-bottom: 5px;margin-left: 20px">
-				<input class="ilimitado" <?php if ($prfx_stored_meta['limite'][0] == "") echo "checked"; ?> type="checkbox"> Ilimitado
+				<input class="ilimitado" <?php if (isset($prfx_stored_meta['limite']) && $prfx_stored_meta['limite'][0] == "") echo "checked"; ?> type="checkbox"> Ilimitado
 			</label>
 		</p>
 		<script>
@@ -275,8 +275,7 @@ function prfx_meta_save_limit($post_id) {
     if ( $is_autosave || $is_revision || !$is_valid_nonce ) {
         return;
 	}
-	
-	// Checks for input and sanitizes/saves if needed
+
     if( isset( $_POST[ 'limite' ] ) ) {
 		$ativ = "";
         update_post_meta( $post_id, 'limite', sanitize_text_field( $_POST[ 'limite' ] ) );
@@ -531,7 +530,7 @@ function wp_custom_attachment_expansivo() {
 	
 	// For convenience, see if the array is valid
 	$you_have_img = is_array( $your_img_src );
-?>
+	?>
 
 <!-- Select para mudar o tipo do banner à ser inserido, o padrão é da galeria do wordpress -->
 
@@ -704,22 +703,24 @@ function wp_custom_attachment_expansivo() {
 } // end wp_custom_attachment
 
 
-function salvar_conteudo_customiz_expansivo($id) {
+function salvar_wp_custom_attachment_expansivo($id) {
 	global $wp_query;
 	global $post;
     /* --- security verification --- */
-    if(isset($_POST['wp_custom_attachment_nonce'])) {
-	if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
+	if(isset($_POST['wp_custom_attachment_nonce'])) {
+			if(!wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
 		return $id;
     } // end if
+	
 	}
+
 	
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 		return $id;
     } // end if
 	
 	if(isset($_POST['post_type'])) {
-		    if('page' == $_POST['post_type']) {
+		    if('banners' == $_POST['post_type']) {
 		if(!current_user_can('edit_page', $id)) {
 			return $id;
 		} // end if
@@ -733,17 +734,16 @@ function salvar_conteudo_customiz_expansivo($id) {
 	
 	
 	if(isset($_POST['wp_custom_attachment_expansivo'])) {
-			add_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']);
-	//add_post_meta($id, 'wp_custom_attachment_type_expansivo', $_POST['wp_custom_attachment_type_expansivo']);
+	
+	add_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']);
 	update_post_meta($id, 'wp_custom_attachment_expansivo', $_POST['wp_custom_attachment_expansivo']); 
-	//update_post_meta($id, 'wp_custom_attachment_type_expansivo', $_POST['wp_custom_attachment_type_expansivo']); 
 	
 
 	}
 	
 	
-} // end salvar_conteudo_customiz
-add_action('save_post', 'salvar_conteudo_customiz_expansivo');
+} // end wp_custom_attachment
+add_action('save_post', 'salvar_wp_custom_attachment_expansivo');
 
 function update_edit_form_expansivo() {
     echo ' enctype="multipart/form-data"';
@@ -898,7 +898,7 @@ function prfx_meta_callback_exibicao_inicio( $post ) {
 	<p>
 		<input type="text" name="exibicao_inicio" value="<?php if($prfx_stored_meta['exibicao_inicio'] != "") {echo $prfx_stored_meta['exibicao_inicio'][0];} ?>" placeholder="00/00/0000" class="data-exibicao data-exibicao-inicio">
 		<label style="vertical-align: middle;display: inline-block;margin-bottom: 5px;margin-left: 20px">
-			<input type="checkbox" <?php if($prfx_stored_meta['exibicao_inicio'][0] == "") {echo "checked";} ?> class="check-data" data-exibicao="inicio"> Vazio
+			<input type="checkbox" <?php if(isset($prfx_stored_meta['exibicao_inicio']) && $prfx_stored_meta['exibicao_inicio'][0] == "") {echo "checked";} ?> class="check-data" data-exibicao="inicio"> Vazio
 		</label>
 	</p>
 <?php
@@ -943,7 +943,7 @@ function prfx_meta_callback_exibicao_fim( $post ) {
 	<p>
 		<input type="text" name="exibicao_fim" value="<?php if($prfx_stored_meta['exibicao_fim'] != "") {echo $prfx_stored_meta['exibicao_fim'][0];} ?>" placeholder="00/00/0000" class="data-exibicao data-exibicao-fim" value="<?php if($prfx_stored_meta['exibicao_fim'] != "") {echo $prfx_stored_meta['exibicao_fim'][0];} ?>">
 		<label style="vertical-align: middle;display: inline-block;margin-bottom: 5px;margin-left: 20px">
-			<input <?php if($prfx_stored_meta['exibicao_fim'][0] == "") {echo "checked";} ?> type="checkbox" class="check-data" data-exibicao="fim"> Vazio
+			<input <?php if(isset($prfx_stored_meta['exibicao_fim']) && $prfx_stored_meta['exibicao_fim'][0] == "") {echo "checked";} ?> type="checkbox" class="check-data" data-exibicao="fim"> Vazio
 		</label>
 	</p>
 <?php
@@ -1308,7 +1308,7 @@ function wp_custom_attachment() {
 </p>
 
 <!-- A hidden input to set and post the chosen image id -->
-<?php if(is_array($a))  { ?>
+<?php  if(isset($a) && is_array($a))  { ?>
 	<input class="custom-img-id" name="wp_custom_attachment" type="hidden" style="visibility:hidden;" value="<?php echo $a['url']; ?>" />
 	<?php } else { ?>
 	<input class="custom-img-id" name="wp_custom_attachment" type="hidden" style="visibility:hidden;" value="<?php echo $a; ?>" />
@@ -1414,24 +1414,31 @@ function wp_custom_attachment() {
 } // end wp_custom_attachment
 
 
-function salvar_conteudo_customiz($id) {
-	global $wp_query;
+function salvar_wp_custom_attachment($id) {
 	global $post;
-
     /* --- security verification --- */
+		if(isset($_POST['wp_custom_attachment'])) {
+
+	add_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']);
+	update_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']); 
+
+	}
+	
+	
 	if(isset($_POST['wp_custom_attachment_nonce'])) {
-    if(wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
+		    if(wp_verify_nonce($_POST['wp_custom_attachment_nonce'], plugin_basename(__FILE__))) {
 		return $id;
     } // end if
+
 	}
+	
 	
     if(defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
 		return $id;
     } // end if
 	
-	
 	if(isset($_POST['post_type'])) {
-    if('page' == $_POST['post_type']) {
+		if('page' == $_POST['post_type']) {
 		if(!current_user_can('edit_page', $id)) {
 			return $id;
 		} // end if
@@ -1440,7 +1447,9 @@ function salvar_conteudo_customiz($id) {
             return $id;
         } // end if
     } // end if
+
 	}
+
 	
     /* - end security verification - */
 	
@@ -1463,12 +1472,7 @@ function salvar_conteudo_customiz($id) {
 	// if(isset($upload['error']) && $upload['error'] != 0) {
 	// wp_die('There was an error uploading your file. The error is: ' . $upload['error']);
 	// } else {
-	
-	if(isset($_POST['wp_custom_attachment'])) {
-	add_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']);
-	update_post_meta($id, 'wp_custom_attachment', $_POST['wp_custom_attachment']); 
-	}
-	
+
 	
 	
 	
@@ -1480,9 +1484,8 @@ function salvar_conteudo_customiz($id) {
 	// } // end if/else
 	
 	//  } // end if
-	
-} // end salvar_conteudo_customiz
-add_action('save_post', 'salvar_conteudo_customiz');
+} // end wp_custom_attachment
+add_action('save_post', 'salvar_wp_custom_attachment');
 
 function update_edit_form() {
     echo ' enctype="multipart/form-data"';
@@ -1623,9 +1626,8 @@ function retornaCodigoBanner($attsArr) {
 	
 	$fim_exibicao = explode("/", $fim_exibicao);
 	$fim_exib = $fim_exibicao[2]."-".$fim_exibicao[1]."-".$fim_exibicao[0];
-	if(!isset($bannerCode)) {
-		$bannerCode = "";
-	}
+	$bannerCode = "";
+	
 	$bannerCode .= "<div style='display:none' class='nome-cliente'>".get_the_title()."</div>";
 	if(strtotime($dataAtual) >= strtotime($ini_exib) && strtotime($dataAtual) <= strtotime($fim_exib)) {
 		$urlbanVisu = plugin_dir_url( __FILE__ ) ."salvar_visu.php?"."ban=".$idbann."&cli=".$idclie."&nm=".$nmcli."&url=" . urlencode($urlban);
